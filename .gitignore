@@ -1,2 +1,5 @@
 config.json
 node_modules
+files/Error
+files/Events/*
+!files/Events/templates
