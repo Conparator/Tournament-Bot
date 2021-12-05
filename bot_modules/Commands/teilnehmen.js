@@ -91,6 +91,10 @@ module.exports = {
                 (eventFileJson.participants).push(interaction.member.user.id);
                 console.log(eventFileJson);
                 fs.writeFileSync(`./files/Events/${eventId}.json`, JSON.stringify(eventFileJson));
+                if (response.statusCode == 200)
+                {
+                    interaction.reply("Du hast dich erfolgreich registriert.");
+                }
             });
         }
         catch (err) {
