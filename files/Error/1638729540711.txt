@@ -1,2 +1,0 @@
-Unhandled promise rejection:
-TypeError: cmdmap_slashCommands[interaction.commandName] is not a function
