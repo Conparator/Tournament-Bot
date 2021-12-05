@@ -1,0 +1,2 @@
+Unhandled promise rejection:
+DiscordAPIError: Missing Access
