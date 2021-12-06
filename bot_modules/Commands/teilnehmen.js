@@ -14,7 +14,7 @@ module.exports = {
             "event_id"
         ],
         [
-
+            
         ]),
 
     slashcommand: datastructures.slashcommand_Global(
@@ -74,7 +74,7 @@ module.exports = {
 
             var eventFileJson = JSON.parse(fs.readFileSync(`./files/Events/${eventId}.json`));
             
-            if (((Array)(eventFileJson.participants)).find(element => element == interaction.member.user.id) !== undefined)
+            if ((eventFileJson.participants).find(element => element.discord_snowflake == interaction.member.user.id) !== undefined)
             {
                 interaction.reply("Du hast dich bereits für dieses Event registriert!");
                 return;
@@ -88,8 +88,15 @@ module.exports = {
                 console.error('error:', error); // Print the error if one occurred
                 console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
                 console.log('body:', body); // Print the HTML for the Google homepage.
-                (eventFileJson.participants).push(interaction.member.user.id);
+                //(eventFileJson.participants).push(interaction.member.user.id);
+
+                var partObj = JSON.parse(fs.readFileSync(`./files/Events/templates/participant_template.json`));
+                partObj.discord_snowflake = interaction.member.user.id;
+                partObj.participantData = JSON.parse(body);
+                (eventFileJson.participants).push(partObj);
+
                 console.log(eventFileJson);
+                
                 fs.writeFileSync(`./files/Events/${eventId}.json`, JSON.stringify(eventFileJson));
                 if (response.statusCode == 200)
                 {

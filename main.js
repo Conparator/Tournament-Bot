@@ -36,6 +36,9 @@ const slashCommands_Module = require('./bot_modules/slashcommands');
 
 //bot-modules COMMANDS
 const teilnehmen_Module = require('./bot_modules/Commands/teilnehmen');
+const abmelden_Module = require('./bot_modules/Commands/abmelden');
+
+const ping_Module = require('./bot_modules/Commands/ping');
 
 //bot-modules DATASTRUCTURES
 const datastructures = require('./bot_modules/Datastructures/datastructures');
@@ -46,14 +49,14 @@ var cmdmap = {
 
 var cmdmap2 = {
     listGuilds: list_guilds,
-    leaveGuild: leave_guild,
-
-    help: cmd_help,
+    leaveGuild: leave_guild
 }
 
 var cmdmap_slashCommands =
 {
-    teilnehmen: teilnehmen_Module.exec_slashCommand
+    teilnehmen: teilnehmen_Module.exec_slashCommand,
+    abmelden: abmelden_Module.exec_slashCommand,
+    ping: ping_Module.exec_slashCommand
 }
 
 process.on('unhandledRejection', (error) => {
@@ -171,7 +174,7 @@ client.on('ready', () => {
     client.user.setActivity(`Type ${config.prefix}help`, { type: 'WATCHING' });
 })
 
-client.on('message', (msg) => {
+client.on('messageCreate', (msg) => {
     var cont = msg.content,
         //author = msg.member,
         user = msg.author,
