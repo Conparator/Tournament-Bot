@@ -102,7 +102,7 @@ module.exports = {
                 }
                 else
                 {
-                    interaction.reply("Ein Fehler ist aufgetreten.");
+                    interaction.reply(`Es ist ein Fehler aufgetreten. Bitte überprüfe deine Eingabe.`);
                 }
 
             });

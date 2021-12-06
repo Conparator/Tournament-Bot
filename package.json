@@ -15,6 +15,7 @@
     "download-file": "^0.1.5",
     "mathjs": "^10.0.0",
     "request": "^2.88.2",
-    "slash-commands": "^1.5.0"
+    "slash-commands": "^1.5.0",
+    "canvas": "^2.8.0"
   }
 }

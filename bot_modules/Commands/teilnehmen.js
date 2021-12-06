@@ -4,42 +4,47 @@ const datastructures = require('../Datastructures/datastructures');
 const request = require('request');
 const fs = require('fs')
 
-module.exports = {
-    command_registry: datastructures.command_registry_prototype(
-        "teilnehmen",
-        "Melde dich für ein Event an.",
-        "Melde dich für ein Event an.",
-        [
-            "spielername",
-            "event_id"
-        ],
-        [
-            
-        ]),
+const command_message = datastructures.command_registry_prototype(
+    "teilnehmen",
+    "Melde dich für ein Event an.",
+    "Melde dich für ein Event an.",
+    [
+        "spielername",
+        "event_id"
+    ],
+    [
 
-    slashcommand: datastructures.slashcommand_Global(
-        "teilnehmen",
-        "Melde dich für ein Event an.",
-        [
-            {
-                name: "spielername",
-                value: "",
-                description: "Dein Spielername.",
-                required: true,
-                type: "string"
-            },
-            {
-                name: "event_id",
-                value: "",
-                description: "Die ID des Events.",
-                required: true,
-                type: "string"
-            }
-        ],
-        [
-            "782172351001001985"
-        ]
-    ),
+    ]
+);
+
+const command_slashcommand = datastructures.slashcommand_Global(
+    "teilnehmen",
+    "Melde dich für ein Event an.",
+    [
+        {
+            name: "spielername",
+            value: "",
+            description: "Dein Spielername.",
+            required: true,
+            type: "string"
+        },
+        {
+            name: "event_id",
+            value: "",
+            description: "Die ID des Events.",
+            required: true,
+            type: "string"
+        }
+    ],
+    [
+        "782172351001001985"
+    ]
+);
+
+module.exports = {
+    command_registry: command_message,
+
+    slashcommand: command_slashcommand,
 
     exec_messagecommand(msg, args) {
 
@@ -60,22 +65,26 @@ module.exports = {
 
     async exec_slashCommand(interaction) {
         try {
-            //console.log(interaction);
-            const playerName = (interaction.options.data.some(function(o) { return o.name === "spielername"; }) === false) ? null : interaction.options.data.filter(o => o.name === "spielername")[0].value;;
-            const eventId = (interaction.options.data.some(function(o) { return o.name === "event_id"; }) === false) ? null : interaction.options.data.filter(o => o.name === "event_id")[0].value;;
+            if (command_slashcommand.channel_whitelist.find(element => element == interaction.channelId) == undefined) {
+                interaction.reply({ content: `Dieser Befehl ist in diesem Kanal nicht verfügbar!`, ephemeral: true });
+                return;
+            }
 
-            if (fs.existsSync(`./files/Events/${eventId}.json`) == false)
-            {
+            //console.log(interaction);
+            const playerName = (interaction.options.data.some(function (o) { return o.name === "spielername"; }) === false) ? null : interaction.options.data.filter(o => o.name === "spielername")[0].value;;
+            const eventId = (interaction.options.data.some(function (o) { return o.name === "event_id"; }) === false) ? null : interaction.options.data.filter(o => o.name === "event_id")[0].value;;
+
+            if (fs.existsSync(`./files/Events/${eventId}.json`) == false) {
                 fs.copyFileSync(`./files/Events/templates/event_template.json`, `./files/Events/${eventId}.json`);
                 var eventFileJson = JSON.parse(fs.readFileSync(`./files/Events/${eventId}.json`));
                 eventFileJson.eventId = eventId;
                 fs.writeFileSync(`./files/Events/${eventId}.json`, JSON.stringify(eventFileJson));
+                console.log("Neue Event-Datei erstellt.");
             }
 
             var eventFileJson = JSON.parse(fs.readFileSync(`./files/Events/${eventId}.json`));
-            
-            if ((eventFileJson.participants).find(element => element.discord_snowflake == interaction.member.user.id) !== undefined)
-            {
+
+            if ((eventFileJson.participants).find(element => element.discord_snowflake == interaction.member.user.id) !== undefined) {
                 interaction.reply("Du hast dich bereits für dieses Event registriert!");
                 return;
             }
@@ -90,17 +99,21 @@ module.exports = {
                 console.log('body:', body); // Print the HTML for the Google homepage.
                 //(eventFileJson.participants).push(interaction.member.user.id);
 
-                var partObj = JSON.parse(fs.readFileSync(`./files/Events/templates/participant_template.json`));
-                partObj.discord_snowflake = interaction.member.user.id;
-                partObj.participantData = JSON.parse(body);
-                (eventFileJson.participants).push(partObj);
+                if (response.statusCode == 200) {
+                    var partObj = JSON.parse(fs.readFileSync(`./files/Events/templates/participant_template.json`));
+                    partObj.discord_snowflake = interaction.member.user.id;
+                    partObj.participantData = JSON.parse(body);
+                    (eventFileJson.participants).push(partObj);
 
-                console.log(eventFileJson);
-                
-                fs.writeFileSync(`./files/Events/${eventId}.json`, JSON.stringify(eventFileJson));
-                if (response.statusCode == 200)
-                {
+                    console.log(eventFileJson);
+
+                    fs.writeFileSync(`./files/Events/${eventId}.json`, JSON.stringify(eventFileJson));
+
                     interaction.reply("Du hast dich erfolgreich registriert.");
+                }
+                else
+                {
+                    interaction.reply(`Es ist ein Fehler aufgetreten. Bitte überprüfe deine Eingabe.`);
                 }
             });
         }

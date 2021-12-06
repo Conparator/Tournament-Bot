@@ -39,6 +39,7 @@ const teilnehmen_Module = require('./bot_modules/Commands/teilnehmen');
 const abmelden_Module = require('./bot_modules/Commands/abmelden');
 
 const ping_Module = require('./bot_modules/Commands/ping');
+const hilfe_Module = require('./bot_modules/Commands/hilfe');
 
 //bot-modules DATASTRUCTURES
 const datastructures = require('./bot_modules/Datastructures/datastructures');
@@ -56,7 +57,8 @@ var cmdmap_slashCommands =
 {
     teilnehmen: teilnehmen_Module.exec_slashCommand,
     abmelden: abmelden_Module.exec_slashCommand,
-    ping: ping_Module.exec_slashCommand
+    ping: ping_Module.exec_slashCommand,
+    hilfe: hilfe_Module.exec_slashCommand
 }
 
 process.on('unhandledRejection', (error) => {
@@ -171,7 +173,7 @@ client.on('ready', () => {
 
     slashCommands_Module.init_slashCommands();
 
-    client.user.setActivity(`Type ${config.prefix}help`, { type: 'WATCHING' });
+    client.user.setActivity(`Type ${config.prefix}hilfe`, { type: 'WATCHING' });
 })
 
 client.on('messageCreate', (msg) => {
